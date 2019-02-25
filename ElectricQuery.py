@@ -11,11 +11,14 @@ import requests
 
 class ElectricQuery(object):
 
-    def __init__(self, DormNum):
-        self.DormNum = str(DormNum)
+    def __init__(self):
         self.session = requests.Session()
         self.loginUrl = 'http://202.116.25.12/Login.aspx'
         self.defaultUrl = 'http://202.116.25.12/default.aspx'
+
+    def Query(self, DormNum):
+        self.DormNum = str(DormNum)
+        print("宿舍号: %s" % self.DormNum)
 
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
@@ -29,8 +32,6 @@ class ElectricQuery(object):
         self.__VIEWSTATE = info['__VIEWSTATE']
         self.__EVENTVALIDATION = info['__EVENTVALIDATION']
 
-    def Query(self):
-        print("宿舍号: %s" % self.DormNum)
         self.RestPower()
         self.UsedHistroy()
 
@@ -121,8 +122,7 @@ class ElectricQuery(object):
 
 
 if __name__ == "__main__":
-    try:
-        DormNum = sys.argv[1]
-    except:
-        DormNum = '3607'
-    ElectricQuery(DormNum=DormNum).Query()
+    query = ElectricQuery()
+    for dorm in sys.argv[1:]:
+        query.Query(dorm)
+        print('********************************')
