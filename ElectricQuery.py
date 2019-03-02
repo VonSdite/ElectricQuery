@@ -16,16 +16,16 @@ class ElectricQuery(object):
         self.loginUrl = 'http://202.116.25.12/Login.aspx'
         self.defaultUrl = 'http://202.116.25.12/default.aspx'
 
+        self.headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36'
+        }
+
     def Query(self, DormNum):
         self.DormNum = str(DormNum)
         print("宿舍号: %s" % self.DormNum)
 
-        self.headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
-            # 获取cookie
-            "cookie":  self.GetCookie(),
-            "Connection": "keep-alive"
-        }
+        # 先模拟登陆, Session会自动保存cookie
+        self.Login()
 
         # 获取__VIEWSTATE、__EVENTVALIDATION
         info = self.GetInfo()
@@ -35,12 +35,8 @@ class ElectricQuery(object):
         self.RestPower()
         self.UsedHistroy()
 
-    def GetCookie(self):
-        # 先模拟登陆
-        # 再获取cookie
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36'
-        }
+    def Login(self):
+        # 先模拟登陆, Session会自动保存cookie
         loginData = {
             "__LASTFOCUS": "",
             "__EVENTTARGET": "",
@@ -55,11 +51,7 @@ class ElectricQuery(object):
             "ctl01": "",
         }
         res = self.session.post(
-            url=self.loginUrl, headers=headers, data=loginData)
-        cookie = res.headers['Set-Cookie'].split(';')
-        cookie = ';'.join((cookie[0], cookie[2].split(',')[1]))
-
-        return cookie
+            url=self.loginUrl, headers=self.headers, data=loginData)
 
     def GetInfo(self):
         # Returns:
